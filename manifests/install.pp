@@ -34,11 +34,25 @@ class stingray::install {
     require => File['/opt/riverbed/stingray'],
   }
 
+  file { "/opt/riverbed/stingray/stingray-reset.conf" :
+    source => "puppet://${server}/modules/stingray/stingray-reset.conf",
+    require => File['/opt/riverbed/stingray'],
+  }
+
   exec { 'install stingray' : 
     command => '/opt/riverbed/stingray/zinstall --noninteractive --replay-from=/opt/riverbed/stingray/stingray.conf',
     path => ['/bin', '/usr/bin'],
     creates => "/usr/local/zeus",
     require => [Exec['extract stingray'], File["/opt/riverbed/stingray/stingray.conf"]],
+  }
+
+  # Clear any previously define configuration
+  exec { "clear stingray configuration" :
+    command => "/usr/local/zeus/zxtm/configure --noninteractive --replay-from=/opt/riverbed/stingray/stingray-reset.conf",
+    path => ['/bin', '/usr/bin'],
+    logoutput => true,
+    returns => [0, 1],
+    require => [Exec["install stingray"], File["/opt/riverbed/stingray/stingray-reset.conf"]],
   }
 
   # We configure separately as if zxtm!perform_initial_config to y then this
@@ -47,7 +61,7 @@ class stingray::install {
     command => "/usr/local/zeus/zxtm/configure --noninteractive --replay-from=/opt/riverbed/stingray/stingray.conf",
     path => ['/bin', '/usr/bin'],
     logoutput => true,
-    require => Exec["install stingray"],
+    require => Exec["clear stingray configuration"],
   }
 
   # Unzip is needed by the cli
