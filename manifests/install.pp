@@ -2,23 +2,22 @@
 # vi: set ft=puppet :
 
 class stingray::install {
+  file { '/opt/riverbed' : 
+    ensure => 'directory',
+  }
+
   exec { 'download stingray':
     command => "wget https://support.riverbed.com/download.htm?filename=public/software/stingray/trafficmanager/9.1/ZeusTM_91_Linux-x86_64.tgz -O ZeusTM_91_Linux-x86_64.tgz",
-    cwd => '/tmp',
+    cwd => '/opt/riverbed',
     path => ["/bin", "/usr/bin"],
-    creates => "/tmp/ZeusTM_91_Linux-x86_64.tgz",
+    creates => "/opt/riverbed/ZeusTM_91_Linux-x86_64.tgz",
     # The file is 175mb. A 200kb connection (standard for the ADC proxy) will
     # take a little under 15 minutes to donwload the file.
     timeout => 1200,
   }
 
-  file { '/opt/riverbed' : 
-    ensure => 'directory',
-  }
-
   file { '/opt/riverbed/stingray' : 
     ensure => 'directory',
-    require => File['/opt/riverbed'],
   }
 
   exec { 'extract stingray' : 
