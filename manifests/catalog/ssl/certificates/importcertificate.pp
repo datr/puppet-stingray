@@ -10,10 +10,14 @@ define stingray::catalog::ssl::certificates::importcertificate (
   # and its cert tool doesn't support single line keys (sigh). So we escape all
   # the new line characters.
   # See discussion here: http://splash.riverbed.com/thread/5133
-  $private_key_contents = file($private_key_file)
+  #
+  # We use template() instead of file() because template supports() puppet file
+  # paths where as file does not. See
+  # http://projects.puppetlabs.com/issues/1946
+  $private_key_contents = template($private_key_file)
   $private_key_string = regsubst($private_key_contents, '\n', '\\n', 'G')
 
-  $public_cert_contents = file($public_cert_file)
+  $public_cert_contents = template($public_cert_file)
   $public_cert_string = regsubst($public_cert_contents, '\n', '\\n', 'G')
 
   stingray::exec { "import certificate $title" :
