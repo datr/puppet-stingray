@@ -12,7 +12,7 @@ class stingray::install {
     path => ["/bin", "/usr/bin"],
     creates => "/opt/riverbed/ZeusTM_91_Linux-x86_64.tgz",
     # The file is 175mb. A 200kb connection (standard for the ADC proxy) will
-    # take a little under 15 minutes to donwload the file.
+    # take a little under 15 minutes to download the file.
     timeout => 1200,
   }
 
@@ -22,7 +22,7 @@ class stingray::install {
 
   exec { 'extract stingray' : 
     # --strip removes the top level container directory ZeusTM_91_Linux-x86_64/
-    command => 'tar -zxvf /tmp/ZeusTM_91_Linux-x86_64.tgz --strip 1 --directory=/opt/riverbed/stingray',
+    command => 'tar -zxvf /opt/riverbed/ZeusTM_91_Linux-x86_64.tgz --strip 1 --directory=/opt/riverbed/stingray',
     path => '/bin',
     creates => "/opt/riverbed/stingray/zinstall",
     require => [Exec['download stingray'], File['/opt/riverbed/stingray']],
